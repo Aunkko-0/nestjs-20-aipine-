@@ -1,16 +1,14 @@
-#<<<<<<< HEAD
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-#=======
 # Stage 1: Build
 FROM node:20-alpine AS builder
+
 WORKDIR /app
+
 # ต้องมั่นใจว่าไฟล์ package.json อยู่ในโฟลเดอร์เดียวกับ Dockerfile
 #>>>>>>> 90908c0 (update dockerfile)
+
 COPY package*.json ./
 RUN npm install
+
 COPY . .
 RUN npm run build
 

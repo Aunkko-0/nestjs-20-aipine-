@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // ข้อมูล Registry และ Image
         REGISTRY = "ghcr.io"
         IMAGE_NAME = "aunkko-0/nestjs-api-20"
         CREDENTIALS_ID = 'nestjs' 
@@ -17,7 +16,6 @@ pipeline {
 
         stage('2. Docker Login') {
             steps {
-                // ต้องใช้ ID ให้ตรงกับใน Jenkins Credentials
                 withCredentials([usernamePassword(credentialsId: "${env.CREDENTIALS_ID}", passwordVariable: 'GHCR_PAT', usernameVariable: 'GHCR_USER')]) {
                     sh 'echo $GHCR_PAT | docker login $REGISTRY -u $GHCR_USER --password-stdin'
                 }
@@ -26,7 +24,8 @@ pipeline {
 
         stage('3. Build Image') {
             steps {
-                sh "docker build -f Dockerfile -t ${IMAGE_FULL_NAME}:latest ."
+                // ระบุไฟล์ Dockerfile ให้ชัดเจน และมีจุด . ท้ายสุด
+                sh 'docker build -f Dockerfile -t $REGISTRY/$IMAGE_NAME:latest .'
             }
         }
 
@@ -35,16 +34,17 @@ pipeline {
                 sh 'docker push $REGISTRY/$IMAGE_NAME:latest'
             }
         }
-    }
+    } // <--- ปิด stages ตรงนี้
 
     post {
         always {
-            // ลบ Image หลังทำงานเสร็จเพื่อประหยัดพื้นที่
+            // ส่วนนี้ยังอยู่ภายใน pipeline เพราะวงเล็บปิด pipeline อยู่ด้านล่างสุด
             sh 'docker rmi $REGISTRY/$IMAGE_NAME:latest || true'
             cleanWs()
         }
         success {
             echo "Successfully built and pushed: $IMAGE_NAME"
         }
-    }
-}
+    } // <--- ปิด post ตรงนี้
+
+} // <--- ปิด pipeline ตรงนี้ (ต้องเป็นตัวสุดท้ายของไฟล์!)

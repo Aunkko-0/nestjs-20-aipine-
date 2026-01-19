@@ -6,7 +6,7 @@ pipeline {
         string(
             name: 'IMAGE_TAG', 
             defaultValue: 'latest', 
-            description: ''
+            description: 'V.1'
         )
     }
 
@@ -20,7 +20,7 @@ pipeline {
     }
 
     stages {
-        stage('🚀 Update Kubernetes') {
+        stage('Update Kubernetes') {
             steps {
                 script {
                     echo "กำลัง Deploy Image: ${TARGET_IMAGE} ..."
@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('✅ Verify Deployment') {
+        stage('Verify Deployment') {
             steps {
                 script {
                     echo "กำลังตรวจสอบสถานะ..."
@@ -48,10 +48,10 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Deploy เวอร์ชัน ${params.IMAGE_TAG} สำเร็จเรียบร้อย!"
+            echo " Deploy เวอร์ชัน ${params.IMAGE_TAG} สำเร็จเรียบร้อย!"
         }
         failure {
-            echo "❌ Deploy ล้มเหลว! กรุณาเช็ค Logs"
+            echo " Deploy ล้มเหลว! กรุณาเช็ค Logs"
         }
     }
 }
